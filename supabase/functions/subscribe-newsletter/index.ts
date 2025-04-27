@@ -21,16 +21,36 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { email }: NewsletterRequest = await req.json();
 
+    console.log("Sending welcome email to:", email);
+
     const emailResponse = await resend.emails.send({
       from: "NOVA <onboarding@resend.dev>",
       to: [email],
-      subject: "Welcome to NOVA Newsletter!",
+      subject: "Welcome to NOVA Newsletter! 🎉",
       html: `
-        <h1>Welcome to NOVA Newsletter!</h1>
-        <p>Thank you for subscribing to our newsletter. You'll be the first to know about our latest collections, exclusive offers, and fashion tips.</p>
-        <p>Best regards,<br>The NOVA Team</p>
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #333; text-align: center;">Welcome to NOVA Newsletter! 🎉</h1>
+          <p style="color: #666; font-size: 16px; line-height: 1.5;">Thank you for subscribing to our newsletter. You'll be the first to know about:</p>
+          <ul style="color: #666; font-size: 16px; line-height: 1.5;">
+            <li>Latest fashion collections</li>
+            <li>Exclusive deals and discounts</li>
+            <li>Style tips and trends</li>
+            <li>Special events and previews</li>
+          </ul>
+          <p style="color: #666; font-size: 16px; line-height: 1.5;">Stay tuned for our next update!</p>
+          <div style="text-align: center; margin-top: 30px;">
+            <p style="color: #999; font-size: 14px;">Best regards,<br>The NOVA Team</p>
+          </div>
+          <hr style="border: 1px solid #eee; margin: 20px 0;">
+          <p style="color: #999; font-size: 12px; text-align: center;">
+            You received this email because you subscribed to our newsletter.
+            If you didn't subscribe, you can safely ignore this email.
+          </p>
+        </div>
       `,
     });
+
+    console.log("Email sent successfully:", emailResponse);
 
     return new Response(JSON.stringify(emailResponse), {
       status: 200,
@@ -40,6 +60,7 @@ const handler = async (req: Request): Promise<Response> => {
       },
     });
   } catch (error: any) {
+    console.error("Newsletter subscription error:", error);
     return new Response(
       JSON.stringify({ error: error.message }),
       {

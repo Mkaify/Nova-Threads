@@ -1,48 +1,8 @@
-
-import { useState } from "react";
-import { Link } from "react-router-dom";
 import { Facebook, Instagram, Twitter } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Link } from "react-router-dom";
+import NewsletterForm from "./NewsletterForm";
 
 const Footer = () => {
-  const [email, setEmail] = useState("");
-  const [isSubscribing, setIsSubscribing] = useState(false);
-  const { toast } = useToast();
-
-  const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-
-    setIsSubscribing(true);
-    try {
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/subscribe-newsletter`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      if (!response.ok) throw new Error('Subscription failed');
-
-      toast({
-        title: "Successfully subscribed!",
-        description: "Thank you for subscribing to our newsletter.",
-      });
-      setEmail("");
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Subscription failed",
-        description: "Please try again later.",
-      });
-    } finally {
-      setIsSubscribing(false);
-    }
-  };
-
   return (
     <footer className="bg-gray-100">
       <div className="max-w-7xl mx-auto px-4 py-12 md:py-16">
@@ -103,22 +63,7 @@ const Footer = () => {
           <div>
             <h4 className="text-sm font-semibold uppercase tracking-wider mb-4">Subscribe</h4>
             <p className="text-gray-600 mb-4">Subscribe to receive updates, access to exclusive deals, and more.</p>
-            <form onSubmit={handleSubscribe} className="flex">
-              <Input 
-                type="email" 
-                placeholder="Enter your email" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="rounded-r-none"
-              />
-              <Button 
-                type="submit" 
-                disabled={isSubscribing}
-                className="rounded-l-none"
-              >
-                {isSubscribing ? "..." : "Subscribe"}
-              </Button>
-            </form>
+            <NewsletterForm />
           </div>
         </div>
         
