@@ -1,14 +1,16 @@
-
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import Header from '../components/Header';
-import Hero from '../components/Hero';
-import ProductGrid from '../components/ProductGrid';
-import Footer from '../components/Footer';
-import { products } from '../data/products';
+import Header from '@/components/Header';
+import Hero from '@/components/Hero';
+import ProductGrid from '@/components/ProductGrid';
+import Footer from '@/components/Footer';
+import { useProducts } from '@/hooks/useProducts'; // ✅ Import Hook
+import { Loader2 } from 'lucide-react';
 
 const Index = () => {
   const [category, setCategory] = useState('all');
+  
+  // ✅ Fetch Real Data from Supabase
+  const { data: products = [], isLoading } = useProducts();
   
   const filteredProducts = category === 'all' 
     ? products 
@@ -21,37 +23,38 @@ const Index = () => {
         <Hero />
         
         <section className="max-w-7xl mx-auto px-4 py-12">
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
             <h2 className="text-3xl font-bold">Featured Products</h2>
-            <div className="flex space-x-2">
-              <button 
-                onClick={() => setCategory('all')}
-                className={`px-4 py-2 rounded-full text-sm ${category === 'all' ? 'bg-black text-white' : 'bg-gray-100'}`}
-              >
-                All
-              </button>
-              <button 
-                onClick={() => setCategory('clothing')}
-                className={`px-4 py-2 rounded-full text-sm ${category === 'clothing' ? 'bg-black text-white' : 'bg-gray-100'}`}
-              >
-                Clothing
-              </button>
-              <button 
-                onClick={() => setCategory('accessories')}
-                className={`px-4 py-2 rounded-full text-sm ${category === 'accessories' ? 'bg-black text-white' : 'bg-gray-100'}`}
-              >
-                Accessories
-              </button>
-              <button 
-                onClick={() => setCategory('shoes')}
-                className={`px-4 py-2 rounded-full text-sm ${category === 'shoes' ? 'bg-black text-white' : 'bg-gray-100'}`}
-              >
-                Shoes
-              </button>
+            
+            {/* Category Filter */}
+            <div className="flex flex-wrap gap-2">
+              {['all', 'clothing', 'accessories', 'shoes'].map((cat) => (
+                <button 
+                  key={cat}
+                  onClick={() => setCategory(cat)}
+                  className={`px-4 py-2 rounded-full text-sm capitalize transition-colors
+                    ${category === cat 
+                      ? 'bg-black text-white' 
+                      : 'bg-gray-100 hover:bg-gray-200 text-gray-800'}`}
+                >
+                  {cat}
+                </button>
+              ))}
             </div>
           </div>
           
-          <ProductGrid products={filteredProducts} />
+          {/* ✅ Loading State */}
+          {isLoading ? (
+            <div className="flex justify-center py-20">
+              <Loader2 className="h-10 w-10 animate-spin text-gray-400" />
+            </div>
+          ) : filteredProducts.length > 0 ? (
+            <ProductGrid products={filteredProducts} />
+          ) : (
+            <div className="text-center py-20 bg-gray-50 rounded-lg">
+              <p className="text-gray-500">No products found. Try adding some from the Admin Dashboard!</p>
+            </div>
+          )}
         </section>
       </main>
       <Footer />
